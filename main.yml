@@ -29,7 +29,7 @@
         groups: docker
         ansible_connection: docker
 
-    - wait_for: timeout=20
+    - wait_for: timeout=60
 
 - hosts: tmp-oracle-soa-domain
   connection: docker
@@ -59,6 +59,10 @@
   vars_files:
     - vars/main.yml
   tasks:
+    - name: docker commit
+      command: "docker commit tmp-oracle-soa-database {{ db_image_name }}:{{ item }}"
+      with_items: "{{ db_tags }}"
+
     - name: docker commit
       command: "docker commit tmp-oracle-soa-domain {{ image_name }}:{{ item }}"
       with_items: "{{ tags }}"

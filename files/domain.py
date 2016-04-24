@@ -4,7 +4,8 @@ DOMAIN      = 'domain1'
 DOMAIN_PATH = '/opt/oraclefmw/config/domains/' + DOMAIN
 APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
-SERVER_ADDRESS = '172.31.47.111'
+ADMIN_SERVER_ADDRESS = 'admin-server'
+SOA_SERVER_ADDRESS = 'soa-server'
 LOG_FOLDER     = '/opt/oraclefmw/weblogic/'
 
 # Expanded or Compact
@@ -65,8 +66,8 @@ def changeDatasourceToXA(datasource):
 
 def changeManagedServer(server,port,java_arguments):
     cd('/Servers/'+server)
-    set('Machine'      ,'LocalMachine')
-    # set('ListenAddress',SERVER_ADDRESS)
+    set('Machine'      ,'SOA_Machine')
+    set('ListenAddress',SOA_SERVER_ADDRESS)
     set('ListenPort'   ,port)
 
     create(server,'ServerStart')
@@ -118,7 +119,7 @@ set('Name',ADMIN_SERVER )
 cd('/Servers/'+ADMIN_SERVER)
 
 # address and port
-# set('ListenAddress',SERVER_ADDRESS)
+set('ListenAddress',ADMIN_SERVER_ADDRESS)
 set('ListenPort'   ,7001)
 
 setOption( "AppDir", APP_PATH )
@@ -249,18 +250,25 @@ if BAM_ENABLED == true:
 
 print 'end datasources'
 
-
-print('Create machine LocalMachine with type UnixMachine')
+print('Create machine SOA_Machine with type UnixMachine')
 cd('/')
-create('LocalMachine','UnixMachine')
-cd('UnixMachine/LocalMachine')
-create('LocalMachine','NodeManager')
-cd('NodeManager/LocalMachine')
-# set('ListenAddress',SERVER_ADDRESS)
+create('SOA_Machine','UnixMachine')
+cd('UnixMachine/SOA_Machine')
+create('SOA_Machine','NodeManager')
+cd('NodeManager/SOA_Machine')
+set('ListenAddress',SOA_SERVER_ADDRESS)
+
+print('Create machine AdminMachine with type UnixMachine')
+cd('/')
+create('AdminMachine','UnixMachine')
+cd('UnixMachine/AdminMachine')
+create('AdminMachine','NodeManager')
+cd('NodeManager/AdminMachine')
+set('ListenAddress',ADMIN_SERVER_ADDRESS)
 
 print 'Change AdminServer'
 cd('/Servers/'+ADMIN_SERVER)
-set('Machine','LocalMachine')
+set('Machine','AdminMachine')
 
 print 'change soa_server1'
 cd('/')
