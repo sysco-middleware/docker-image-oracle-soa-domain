@@ -1,0 +1,80 @@
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - vars/main.yml
+  tasks:
+
+    - name: create soa database container
+      docker:
+        name: tmp-oracle-soa-database
+        image: "{{ base_db_image }}"
+        state: started
+
+    - name: create soa domain container
+      docker:
+        name: tmp-oracle-soa-domain
+        image: "{{ base_image }}"
+        links:
+          - tmp-oracle-soa-database:soa-database
+        command: sleep infinity
+        state: started
+
+    - add_host:
+        name: tmp-oracle-soa-database
+        groups: docker
+        ansible_connection: docker
+
+    - add_host:
+        name: tmp-oracle-soa-domain
+        groups: docker
+        ansible_connection: docker
+
+    - wait_for: timeout=20
+
+- hosts: tmp-oracle-soa-domain
+  connection: docker
+  tasks:
+    - file:
+        path: /tmp
+        state: directory
+        mode: 0777
+
+    - copy:
+        src: domain.py
+        dest: /opt/oraclefmw/domain.py
+      become: yes
+      become_user: oraclefmw
+
+    - shell: "/opt/oraclefmw/product/oracle_home/oracle_common/common/bin/wlst.sh /opt/oraclefmw/domain.py"
+      register: domain
+      ignore_errors: yes
+      become: yes
+      become_user: oraclefmw
+
+    - debug:
+        var: domain
+
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: docker commit
+      command: "docker commit tmp-oracle-soa-domain {{ image_name }}:{{ item }}"
+      with_items: "{{ tags }}"
+
+    - name: docker kill
+      command: "docker kill {{ item }}"
+      with_items:
+        - tmp-oracle-soa-domain
+        - tmp-oracle-soa-database
+
+    - name: docker rm
+      command: "docker rm {{ item }}"
+      with_items:
+        - tmp-oracle-soa-domain
+        - tmp-oracle-soa-database
+
+    - name: docker push
+      command: "docker push {{ image_name }}:{{ item }}"
+      with_items: "{{ tags }}"
