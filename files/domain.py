@@ -6,6 +6,8 @@ APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
 ADMIN_SERVER_ADDRESS = 'admin-server'
 SOA_SERVER_ADDRESS = 'soa-server'
+OSB_SERVER_ADDRESS = 'osb-server'
+BAM_SERVER_ADDRESS = 'bam-server'
 LOG_FOLDER     = '/opt/oraclefmw/weblogic/'
 
 # Expanded or Compact
@@ -55,6 +57,15 @@ def createAdminStartupPropertiesFile(directoryPath, args):
     fileNew.flush()
     fileNew.close()
 
+def defineMachine(machineName, machineAddress):
+    print('Create machine ' + machineName + ' with type UnixMachine')
+    cd('/')
+    create(machineName,'UnixMachine')
+    cd('UnixMachine/' + machineName)
+    create(machineName,'NodeManager')
+    cd('NodeManager/' + machineName)
+    set('ListenAddress',machineAddress)
+
 def changeDatasourceToXA(datasource):
     print 'Change datasource '+datasource
     cd('/')
@@ -65,10 +76,10 @@ def changeDatasourceToXA(datasource):
     set('GlobalTransactionsProtocol','TwoPhaseCommit')
     cd('/')
 
-def changeManagedServer(server,port,java_arguments):
+def changeManagedServer(server,machine,address,port,java_arguments):
     cd('/Servers/'+server)
-    set('Machine'      ,'SOA_Machine')
-    set('ListenAddress',SOA_SERVER_ADDRESS)
+    set('Machine'      ,machine)
+    set('ListenAddress',address)
     set('ListenPort'   ,port)
 
     create(server,'ServerStart')
@@ -254,13 +265,13 @@ if BAM_ENABLED == true:
 print 'end datasources'
 
 if SOA_ENABLED == true:
-    print('Create machine SOA_Machine with type UnixMachine')
-    cd('/')
-    create('SOA_Machine','UnixMachine')
-    cd('UnixMachine/SOA_Machine')
-    create('SOA_Machine','NodeManager')
-    cd('NodeManager/SOA_Machine')
-    set('ListenAddress',SOA_SERVER_ADDRESS)
+    defineMachine('SOA_Machine', SOA_SERVER_ADDRESS)
+
+if OSB_ENABLED == true:
+    defineMachine('OSB_Machine', OSB_SERVER_ADDRESS)
+
+if BAM_ENABLED == true:
+    defineMachine('BAM_Machine', BAM_SERVER_ADDRESS)
 
 print('Create machine AdminMachine with type UnixMachine')
 cd('/')
@@ -277,17 +288,17 @@ set('Machine','AdminMachine')
 if SOA_ENABLED == true:
     print 'change soa_server1'
     cd('/')
-    changeManagedServer('soa_server1',8001,SOA_JAVA_ARGUMENTS)
+    changeManagedServer('soa_server1','SOA_Machine',SOA_SERVER_ADDRESS,8001,SOA_JAVA_ARGUMENTS)
 
 if BAM_ENABLED == true:
     print 'change bam_server1'
     cd('/')
-    changeManagedServer('bam_server1',9001,BAM_JAVA_ARGUMENTS)
+    changeManagedServer('bam_server1','BAM_Machine',BAM_SERVER_ADDRESS,9001,BAM_JAVA_ARGUMENTS)
 
 if OSB_ENABLED == true:
     print 'change osb_server1'
     cd('/')
-    changeManagedServer('osb_server1',8011,OSB_JAVA_ARGUMENTS)
+    changeManagedServer('osb_server1','OSB_Machine',OSB_SERVER_ADDRESS,8011,OSB_JAVA_ARGUMENTS)
 
 print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
 serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
