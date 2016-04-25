@@ -3,6 +3,6 @@ base_db_image: syscomiddleware/oracle-soa-database:oraclelinux-12.2.1
 image_name: syscomiddleware/oracle-soa-domain
 db_image_name: syscomiddleware/oracle-soa-domain-database
 tags:
-  - centos-12.2.1
+  - osb-centos-12.2.1
 db_tags:
-  - oraclelinux-12.2.1
+  - osb-oraclelinux-12.2.1

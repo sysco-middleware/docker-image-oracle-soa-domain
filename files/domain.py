@@ -29,8 +29,8 @@ SOA_REPOS_DBURL          = 'jdbc:oracle:thin:@soa-database:1521/orcl'
 SOA_REPOS_DBUSER_PREFIX  = 'DEV'
 SOA_REPOS_DBPASSWORD     = 'welcome1'
 
-SOA_ENABLED=true
-OSB_ENABLED=false
+SOA_ENABLED=false
+OSB_ENABLED=true
 BPM_ENABLED=false
 BAM_ENABLED=false
 B2B_ENABLED=false
@@ -239,7 +239,8 @@ set('Value',SOA_REPOS_DBUSER_PREFIX+'_STB')
 print 'Call getDatabaseDefaults which reads the service table'
 getDatabaseDefaults()
 
-changeDatasourceToXA('EDNDataSource')
+if SOA_ENABLED == true:
+    changeDatasourceToXA('EDNDataSource')
 
 if OSB_ENABLED == true:
     changeDatasourceToXA('wlsbjmsrpDataSource')
