@@ -79,6 +79,7 @@
         - tmp-oracle-soa-domain
         - tmp-oracle-soa-database
 
-    - name: docker push
-      command: "docker push {{ image_name }}:{{ item }}"
-      with_items: "{{ tags }}"
+    # image should be push into a private registry
+    # - name: docker push
+    #   command: "docker push {{ image_name }}:{{ item }}"
+    #   with_items: "{{ tags }}"
