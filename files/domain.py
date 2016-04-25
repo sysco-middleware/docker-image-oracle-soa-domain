@@ -29,6 +29,7 @@ SOA_REPOS_DBURL          = 'jdbc:oracle:thin:@soa-database:1521/orcl'
 SOA_REPOS_DBUSER_PREFIX  = 'DEV'
 SOA_REPOS_DBPASSWORD     = 'welcome1'
 
+SOA_ENABLED=true
 OSB_ENABLED=false
 BPM_ENABLED=false
 BAM_ENABLED=false
@@ -198,8 +199,9 @@ if OSB_ENABLED == true:
 print 'Adding ApplCore Template'
 addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub_template.jar')
 
-print 'Adding SOA Template'
-addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template.jar')
+if SOA_ENABLED == true:
+    print 'Adding SOA Template'
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template.jar')
 
 if BAM_ENABLED == true:
     print 'Adding BAM Template'
@@ -250,13 +252,14 @@ if BAM_ENABLED == true:
 
 print 'end datasources'
 
-print('Create machine SOA_Machine with type UnixMachine')
-cd('/')
-create('SOA_Machine','UnixMachine')
-cd('UnixMachine/SOA_Machine')
-create('SOA_Machine','NodeManager')
-cd('NodeManager/SOA_Machine')
-set('ListenAddress',SOA_SERVER_ADDRESS)
+if SOA_ENABLED == true:
+    print('Create machine SOA_Machine with type UnixMachine')
+    cd('/')
+    create('SOA_Machine','UnixMachine')
+    cd('UnixMachine/SOA_Machine')
+    create('SOA_Machine','NodeManager')
+    cd('NodeManager/SOA_Machine')
+    set('ListenAddress',SOA_SERVER_ADDRESS)
 
 print('Create machine AdminMachine with type UnixMachine')
 cd('/')
@@ -270,9 +273,10 @@ print 'Change AdminServer'
 cd('/Servers/'+ADMIN_SERVER)
 set('Machine','AdminMachine')
 
-print 'change soa_server1'
-cd('/')
-changeManagedServer('soa_server1',8001,SOA_JAVA_ARGUMENTS)
+if SOA_ENABLED == true:
+    print 'change soa_server1'
+    cd('/')
+    changeManagedServer('soa_server1',8001,SOA_JAVA_ARGUMENTS)
 
 if BAM_ENABLED == true:
     print 'change bam_server1'
@@ -288,16 +292,17 @@ print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
 serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
 setServerGroups(ADMIN_SERVER, serverGroup)
 
-if ESS_ENABLED == true:
-    print 'Add server group SOA-MGD-SVRS,ESS-MGD-SVRS to soa_server1'
-    cd('/')
-    delete('ess_server1', 'Server')
-    serverGroup = ["SOA-MGD-SVRS","ESS-MGD-SVRS"]
-else:
-    print 'Add server group SOA-MGD-SVRS to soa_server1'
-    serverGroup = ["SOA-MGD-SVRS"]
+if SOA_ENABLED == true:
+    if ESS_ENABLED == true:
+        print 'Add server group SOA-MGD-SVRS,ESS-MGD-SVRS to soa_server1'
+        cd('/')
+        delete('ess_server1', 'Server')
+        serverGroup = ["SOA-MGD-SVRS","ESS-MGD-SVRS"]
+    else:
+        print 'Add server group SOA-MGD-SVRS to soa_server1'
+        serverGroup = ["SOA-MGD-SVRS"]
 
-setServerGroups('soa_server1', serverGroup)
+    setServerGroups('soa_server1', serverGroup)
 
 if BAM_ENABLED == true:
     print 'Add server group BAM12-MGD-SVRS to bam_server1'
@@ -314,7 +319,8 @@ print 'end server groups'
 updateDomain()
 closeDomain();
 
-createBootPropertiesFile(DOMAIN_PATH+'/servers/soa_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
+if SOA_ENABLED == true:
+    createBootPropertiesFile(DOMAIN_PATH+'/servers/soa_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
 if BAM_ENABLED == true:
     createBootPropertiesFile(DOMAIN_PATH+'/servers/bam_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
