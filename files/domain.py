@@ -4,14 +4,14 @@ DOMAIN      = 'domain1'
 DOMAIN_PATH = '/opt/oraclefmw/config/domains/' + DOMAIN
 APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
-ADMIN_SERVER_ADDRESS = 'admin-server'
-SOA_SERVER_ADDRESS = 'soa-server'
-OSB_SERVER_ADDRESS = 'osb-server'
-BAM_SERVER_ADDRESS = 'bam-server'
+ADMIN_SERVER_ADDRESS = 'ADMIN-SERVER-ADDRESS'
+SOA_SERVER_ADDRESS = 'SOA-SERVER-ADDRESS'
+OSB_SERVER_ADDRESS = 'OSB_SERVER-ADDRESS'
+BAM_SERVER_ADDRESS = 'BAM-SERVER-ADDRESS'
 LOG_FOLDER     = '/opt/oraclefmw/weblogic/'
 
 # Expanded or Compact
-DOMAIN_MODE = 'Expanded'
+DOMAIN_MODE = 'Compact'
 JSSE_ENABLED     = true
 DEVELOPMENT_MODE = true
 WEBTIER_ENABLED  = false
@@ -264,13 +264,13 @@ if BAM_ENABLED == true:
 
 print 'end datasources'
 
-if SOA_ENABLED == true:
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
     defineMachine('SOA_Machine', SOA_SERVER_ADDRESS)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     defineMachine('OSB_Machine', OSB_SERVER_ADDRESS)
 
-if BAM_ENABLED == true:
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
     defineMachine('BAM_Machine', BAM_SERVER_ADDRESS)
 
 print('Create machine AdminMachine with type UnixMachine')
@@ -285,26 +285,28 @@ print 'Change AdminServer'
 cd('/Servers/'+ADMIN_SERVER)
 set('Machine','AdminMachine')
 
-if SOA_ENABLED == true:
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'change soa_server1'
     cd('/')
     changeManagedServer('soa_server1','SOA_Machine',SOA_SERVER_ADDRESS,8001,SOA_JAVA_ARGUMENTS)
 
-if BAM_ENABLED == true:
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'change bam_server1'
     cd('/')
     changeManagedServer('bam_server1','BAM_Machine',BAM_SERVER_ADDRESS,9001,BAM_JAVA_ARGUMENTS)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'change osb_server1'
     cd('/')
     changeManagedServer('osb_server1','OSB_Machine',OSB_SERVER_ADDRESS,8011,OSB_JAVA_ARGUMENTS)
 
-print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
-serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
-setServerGroups(ADMIN_SERVER, serverGroup)
 
-if SOA_ENABLED == true:
+if DOMAIN_MODE == 'Expanded':
+    print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
+    serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
+    setServerGroups(ADMIN_SERVER, serverGroup)
+
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
     if ESS_ENABLED == true:
         print 'Add server group SOA-MGD-SVRS,ESS-MGD-SVRS to soa_server1'
         cd('/')
@@ -316,28 +318,28 @@ if SOA_ENABLED == true:
 
     setServerGroups('soa_server1', serverGroup)
 
-if BAM_ENABLED == true:
-    print 'Add server group BAM12-MGD-SVRS to bam_server1'
-    serverGroup = ["BAM12-MGD-SVRS"]
-    setServerGroups('bam_server1', serverGroup)
-
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'Add server group OSB-MGD-SVRS-COMBINED to osb_server1'
     serverGroup = ["OSB-MGD-SVRS-COMBINED"]
     setServerGroups('osb_server1', serverGroup)
+
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    print 'Add server group BAM12-MGD-SVRS to bam_server1'
+    serverGroup = ["BAM12-MGD-SVRS"]
+    setServerGroups('bam_server1', serverGroup)
 
 print 'end server groups'
 
 updateDomain()
 closeDomain();
 
-if SOA_ENABLED == true:
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
     createBootPropertiesFile(DOMAIN_PATH+'/servers/soa_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
-if BAM_ENABLED == true:
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
     createBootPropertiesFile(DOMAIN_PATH+'/servers/bam_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     createBootPropertiesFile(DOMAIN_PATH+'/servers/osb_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
 print('Exiting SOA Domain creation completed ...')
