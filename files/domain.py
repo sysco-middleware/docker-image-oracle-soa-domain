@@ -6,7 +6,7 @@ APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
 ADMIN_SERVER_ADDRESS = 'ADMIN-SERVER-ADDRESS'
 SOA_SERVER_ADDRESS = 'SOA-SERVER-ADDRESS'
-OSB_SERVER_ADDRESS = 'OSB_SERVER-ADDRESS'
+OSB_SERVER_ADDRESS = 'OSB-SERVER-ADDRESS'
 BAM_SERVER_ADDRESS = 'BAM-SERVER-ADDRESS'
 LOG_FOLDER     = '/opt/oraclefmw/weblogic/'
 
@@ -204,36 +204,36 @@ setOption( "AppDir", APP_PATH )
 
 if OSB_ENABLED == true:
     print('Extend...osb domain with template ORACLE_HOME/osb/common/templates/wls/oracle.osb_template.jar')
-    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.wls-webservice-template.jar')
-    addTemplate(ORACLE_HOME+'/osb/common/templates/wls/oracle.osb_template.jar')
+    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.wls-webservice-template_12.1.3.jar')
+    addTemplate(ORACLE_HOME+'/osb/common/templates/wls/oracle.osb_template_12.1.3.jar')
 
 print 'Adding ApplCore Template'
-addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub_template.jar')
+addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub_template_12.1.3.jar')
 
 if SOA_ENABLED == true:
     print 'Adding SOA Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template_12.1.3.jar')
 
 if BAM_ENABLED == true:
     print 'Adding BAM Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bam.server_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bam.server_template_12.1.3.jar')
 
 if BPM_ENABLED == true:
     print 'Adding BPM Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bpm_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bpm_template_12.1.3.jar')
 
 if WEBTIER_ENABLED == true:
     print 'Adding OHS Template'
-    addTemplate(ORACLE_HOME+'/ohs/common/templates/wls/ohs_managed_template.jar')
+    addTemplate(ORACLE_HOME+'/ohs/common/templates/wls/ohs_managed_template_12.1.3.jar')
 
 if B2B_ENABLED == true:
     print 'Adding B2B Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa.b2b_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa.b2b_template_12.1.3.jar')
 
 if ESS_ENABLED == true:
     print 'Adding ESS Template'
-    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.ess.basic_template.jar')
-    addTemplate(ORACLE_HOME+'/em/common/templates/wls/oracle.em_ess_template.jar')
+    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.ess.basic_template_12.1.3.jar')
+    addTemplate(ORACLE_HOME+'/em/common/templates/wls/oracle.em_ess_template_12.1.3.jar')
 
 
 dumpStack()

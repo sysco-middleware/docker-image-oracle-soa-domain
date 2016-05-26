@@ -1,8 +1,8 @@
-base_image: syscomiddleware/oracle-soa:centos-12.2.1-qs
-base_db_image: syscomiddleware/oracle-soa-database:oraclelinux-12.2.1
+base_image: syscomiddleware/oracle-soa:centos-soa-12.1.3-qs
+base_db_image: syscomiddleware/oracle-soa-database:oraclelinux-soa-12.1.3-qs
 image_name: syscomiddleware/oracle-soa-domain
 db_image_name: syscomiddleware/oracle-soa-domain-database
 tags:
-  - osb-centos-12.2.1
+  - osb-compact-domain-centos-soa-12.1.3-qs
 db_tags:
-  - osb-oraclelinux-12.2.1
+  - osb-compact-domain-oraclelinux-soa-12.1.3-qs
