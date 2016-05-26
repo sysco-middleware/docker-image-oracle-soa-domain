@@ -202,13 +202,14 @@ set('NodeManagerPasswordEncrypted',es )
 cd('/')
 setOption( "AppDir", APP_PATH )
 
+print 'Adding ApplCore Template'
+addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub.1.0.0_template.jar')
+
+
 if OSB_ENABLED == true:
     print('Extend...osb domain with template ORACLE_HOME/osb/common/templates/wls/oracle.osb_template.jar')
     addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.wls-webservice-template_12.1.3.jar')
     addTemplate(ORACLE_HOME+'/osb/common/templates/wls/oracle.osb_template_12.1.3.jar')
-
-print 'Adding ApplCore Template'
-addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub_template_12.1.3.jar')
 
 if SOA_ENABLED == true:
     print 'Adding SOA Template'
