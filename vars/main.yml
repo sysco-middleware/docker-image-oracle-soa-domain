@@ -1,5 +1,5 @@
-base_image: syscomiddleware/oracle-soa:centos-soa-12.1.3-qs
-base_db_image: syscomiddleware/oracle-soa-database:oraclelinux-soa-12.1.3-qs
+base_image: syscomiddleware/oracle-soa:centos-soa-qs-12.1.3
+base_db_image: syscomiddleware/oracle-soa-database:oraclelinux-soa-qs-12.1.3
 image_name: syscomiddleware/oracle-soa-domain
 db_image_name: syscomiddleware/oracle-soa-domain-database
 tags:

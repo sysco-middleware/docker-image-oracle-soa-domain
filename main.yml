@@ -29,11 +29,15 @@
         groups: docker
         ansible_connection: docker
 
-    - wait_for: timeout=60
-
 - hosts: tmp-oracle-soa-domain
   connection: docker
   tasks:
+    - shell: tnsping soa-database:1521/orcl
+      register: result
+      until: result.stdout.find('OK') == 0
+      retries: 18
+      delay: 10
+
     - file:
         path: /tmp
         state: directory
