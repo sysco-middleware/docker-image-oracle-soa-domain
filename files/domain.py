@@ -6,10 +6,12 @@ APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
 ADMIN_SERVER_ADDRESS = 'admin-server'
 SOA_SERVER_ADDRESS = 'soa-server'
-LOG_FOLDER     = '/opt/oraclefmw/weblogic/'
+OSB_SERVER_ADDRESS = 'osb-server'
+BAM_SERVER_ADDRESS = 'bam-server'
+LOG_FOLDER     = '/opt/oraclefmw/logs/'
 
 # Expanded or Compact
-DOMAIN_MODE = 'Expanded'
+DOMAIN_MODE = 'Extended'
 JSSE_ENABLED     = true
 DEVELOPMENT_MODE = true
 WEBTIER_ENABLED  = false
@@ -29,6 +31,7 @@ SOA_REPOS_DBURL          = 'jdbc:oracle:thin:@soa-database:1521/orcl'
 SOA_REPOS_DBUSER_PREFIX  = 'DEV'
 SOA_REPOS_DBPASSWORD     = 'welcome1'
 
+SOA_ENABLED=true
 OSB_ENABLED=false
 BPM_ENABLED=false
 BAM_ENABLED=false
@@ -54,6 +57,15 @@ def createAdminStartupPropertiesFile(directoryPath, args):
     fileNew.flush()
     fileNew.close()
 
+def defineMachine(machineName, machineAddress):
+    print('Create machine ' + machineName + ' with type UnixMachine')
+    cd('/')
+    create(machineName,'UnixMachine')
+    cd('UnixMachine/' + machineName)
+    create(machineName,'NodeManager')
+    cd('NodeManager/' + machineName)
+    set('ListenAddress',machineAddress)
+
 def changeDatasourceToXA(datasource):
     print 'Change datasource '+datasource
     cd('/')
@@ -64,10 +76,10 @@ def changeDatasourceToXA(datasource):
     set('GlobalTransactionsProtocol','TwoPhaseCommit')
     cd('/')
 
-def changeManagedServer(server,port,java_arguments):
+def changeManagedServer(server,machine,address,port,java_arguments):
     cd('/Servers/'+server)
-    set('Machine'      ,'SOA_Machine')
-    set('ListenAddress',SOA_SERVER_ADDRESS)
+    set('Machine'      ,machine)
+    set('ListenAddress',address)
     set('ListenPort'   ,port)
 
     create(server,'ServerStart')
@@ -190,37 +202,39 @@ set('NodeManagerPasswordEncrypted',es )
 cd('/')
 setOption( "AppDir", APP_PATH )
 
+print 'Adding ApplCore Template'
+addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub.1.0.0_template.jar')
+
+
 if OSB_ENABLED == true:
     print('Extend...osb domain with template ORACLE_HOME/osb/common/templates/wls/oracle.osb_template.jar')
-    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.wls-webservice-template.jar')
-    addTemplate(ORACLE_HOME+'/osb/common/templates/wls/oracle.osb_template.jar')
+    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.wls-webservice-template_12.1.3.jar')
+    addTemplate(ORACLE_HOME+'/osb/common/templates/wls/oracle.osb_template_12.1.3.jar')
 
-print 'Adding ApplCore Template'
-addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.applcore.model.stub_template.jar')
-
-print 'Adding SOA Template'
-addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template.jar')
+if SOA_ENABLED == true:
+    print 'Adding SOA Template'
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa_template_12.1.3.jar')
 
 if BAM_ENABLED == true:
     print 'Adding BAM Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bam.server_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bam.server_template_12.1.3.jar')
 
 if BPM_ENABLED == true:
     print 'Adding BPM Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bpm_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.bpm_template_12.1.3.jar')
 
 if WEBTIER_ENABLED == true:
     print 'Adding OHS Template'
-    addTemplate(ORACLE_HOME+'/ohs/common/templates/wls/ohs_managed_template.jar')
+    addTemplate(ORACLE_HOME+'/ohs/common/templates/wls/ohs_managed_template_12.1.3.jar')
 
 if B2B_ENABLED == true:
     print 'Adding B2B Template'
-    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa.b2b_template.jar')
+    addTemplate(ORACLE_HOME+'/soa/common/templates/wls/oracle.soa.b2b_template_12.1.3.jar')
 
 if ESS_ENABLED == true:
     print 'Adding ESS Template'
-    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.ess.basic_template.jar')
-    addTemplate(ORACLE_HOME+'/em/common/templates/wls/oracle.em_ess_template.jar')
+    addTemplate(ORACLE_HOME+'/oracle_common/common/templates/wls/oracle.ess.basic_template_12.1.3.jar')
+    addTemplate(ORACLE_HOME+'/em/common/templates/wls/oracle.em_ess_template_12.1.3.jar')
 
 
 dumpStack()
@@ -237,7 +251,8 @@ set('Value',SOA_REPOS_DBUSER_PREFIX+'_STB')
 print 'Call getDatabaseDefaults which reads the service table'
 getDatabaseDefaults()
 
-changeDatasourceToXA('EDNDataSource')
+if SOA_ENABLED == true:
+    changeDatasourceToXA('EDNDataSource')
 
 if OSB_ENABLED == true:
     changeDatasourceToXA('wlsbjmsrpDataSource')
@@ -250,13 +265,14 @@ if BAM_ENABLED == true:
 
 print 'end datasources'
 
-print('Create machine SOA_Machine with type UnixMachine')
-cd('/')
-create('SOA_Machine','UnixMachine')
-cd('UnixMachine/SOA_Machine')
-create('SOA_Machine','NodeManager')
-cd('NodeManager/SOA_Machine')
-set('ListenAddress',SOA_SERVER_ADDRESS)
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    defineMachine('SOA_Machine', SOA_SERVER_ADDRESS)
+
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    defineMachine('OSB_Machine', OSB_SERVER_ADDRESS)
+
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    defineMachine('BAM_Machine', BAM_SERVER_ADDRESS)
 
 print('Create machine AdminMachine with type UnixMachine')
 cd('/')
@@ -270,56 +286,61 @@ print 'Change AdminServer'
 cd('/Servers/'+ADMIN_SERVER)
 set('Machine','AdminMachine')
 
-print 'change soa_server1'
-cd('/')
-changeManagedServer('soa_server1',8001,SOA_JAVA_ARGUMENTS)
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    print 'change soa_server1'
+    cd('/')
+    changeManagedServer('soa_server1','SOA_Machine',SOA_SERVER_ADDRESS,8001,SOA_JAVA_ARGUMENTS)
 
-if BAM_ENABLED == true:
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'change bam_server1'
     cd('/')
-    changeManagedServer('bam_server1',9001,BAM_JAVA_ARGUMENTS)
+    changeManagedServer('bam_server1','BAM_Machine',BAM_SERVER_ADDRESS,9001,BAM_JAVA_ARGUMENTS)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'change osb_server1'
     cd('/')
-    changeManagedServer('osb_server1',8011,OSB_JAVA_ARGUMENTS)
+    changeManagedServer('osb_server1','OSB_Machine',OSB_SERVER_ADDRESS,8011,OSB_JAVA_ARGUMENTS)
 
-print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
-serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
-setServerGroups(ADMIN_SERVER, serverGroup)
 
-if ESS_ENABLED == true:
-    print 'Add server group SOA-MGD-SVRS,ESS-MGD-SVRS to soa_server1'
-    cd('/')
-    delete('ess_server1', 'Server')
-    serverGroup = ["SOA-MGD-SVRS","ESS-MGD-SVRS"]
-else:
-    print 'Add server group SOA-MGD-SVRS to soa_server1'
-    serverGroup = ["SOA-MGD-SVRS"]
+if DOMAIN_MODE == 'Expanded':
+    print 'Add server groups WSM-CACHE-SVR WSMPM-MAN-SVR JRF-MAN-SVR to AdminServer'
+    serverGroup = ["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"]
+    setServerGroups(ADMIN_SERVER, serverGroup)
 
-setServerGroups('soa_server1', serverGroup)
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    if ESS_ENABLED == true:
+        print 'Add server group SOA-MGD-SVRS,ESS-MGD-SVRS to soa_server1'
+        cd('/')
+        delete('ess_server1', 'Server')
+        serverGroup = ["SOA-MGD-SVRS","ESS-MGD-SVRS"]
+    else:
+        print 'Add server group SOA-MGD-SVRS to soa_server1'
+        serverGroup = ["SOA-MGD-SVRS"]
 
-if BAM_ENABLED == true:
-    print 'Add server group BAM12-MGD-SVRS to bam_server1'
-    serverGroup = ["BAM12-MGD-SVRS"]
-    setServerGroups('bam_server1', serverGroup)
+    setServerGroups('soa_server1', serverGroup)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     print 'Add server group OSB-MGD-SVRS-COMBINED to osb_server1'
     serverGroup = ["OSB-MGD-SVRS-COMBINED"]
     setServerGroups('osb_server1', serverGroup)
+
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    print 'Add server group BAM12-MGD-SVRS to bam_server1'
+    serverGroup = ["BAM12-MGD-SVRS"]
+    setServerGroups('bam_server1', serverGroup)
 
 print 'end server groups'
 
 updateDomain()
 closeDomain();
 
-createBootPropertiesFile(DOMAIN_PATH+'/servers/soa_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
+if SOA_ENABLED == true and DOMAIN_MODE == 'Expanded':
+    createBootPropertiesFile(DOMAIN_PATH+'/servers/soa_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
-if BAM_ENABLED == true:
+if BAM_ENABLED == true and DOMAIN_MODE == 'Expanded':
     createBootPropertiesFile(DOMAIN_PATH+'/servers/bam_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
-if OSB_ENABLED == true:
+if OSB_ENABLED == true and DOMAIN_MODE == 'Expanded':
     createBootPropertiesFile(DOMAIN_PATH+'/servers/osb_server1/security','boot.properties',ADMIN_USER,ADMIN_PASSWORD)
 
 print('Exiting SOA Domain creation completed ...')
