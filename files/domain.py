@@ -11,7 +11,7 @@ BAM_SERVER_ADDRESS = 'bam-server'
 LOG_FOLDER     = '/opt/oraclefmw/logs/'
 
 # Expanded or Compact
-DOMAIN_MODE = 'Compact'
+DOMAIN_MODE = 'Extended'
 JSSE_ENABLED     = true
 DEVELOPMENT_MODE = true
 WEBTIER_ENABLED  = false
@@ -31,8 +31,8 @@ SOA_REPOS_DBURL          = 'jdbc:oracle:thin:@soa-database:1521/orcl'
 SOA_REPOS_DBUSER_PREFIX  = 'DEV'
 SOA_REPOS_DBPASSWORD     = 'welcome1'
 
-SOA_ENABLED=false
-OSB_ENABLED=true
+SOA_ENABLED=true
+OSB_ENABLED=false
 BPM_ENABLED=false
 BAM_ENABLED=false
 B2B_ENABLED=false

@@ -19,7 +19,7 @@
       #  path: ./managed-server
       #  name: "{{ image_name }}-osb-server"
       #  tag: "{{ tag }}"
-      command: "docker build -t {{ image_name }}-osb-server managed-server"
+      command: "docker build -t {{ image_name }}-managed-server managed-server"
 
     - name: docker tag admin server image
       command: "docker tag {{ image_name }}-managed-server {{ image_name }}-osb-server:{{ tag }}"

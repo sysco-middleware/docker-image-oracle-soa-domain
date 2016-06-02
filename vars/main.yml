@@ -1,6 +1,6 @@
-base_image: syscomiddleware/oracle-soa:soa-qs-12.1.3-jdk7-centos7
-base_db_image: syscomiddleware/oracle-soa-database:soa-qs-12.1.3-basic-11.2.0.4-se-oraclelinux6.7
+base_image: syscomiddleware/oracle-soa:soa-qs-12.2.1-jdk8-centos7
+base_db_image: syscomiddleware/oracle-soa-database:soa-qs-12.2.1-basic-11.2.0.4-se-oraclelinux6.7
 image_name: syscomiddleware/oracle-soa-domain
 db_image_name: syscomiddleware/oracle-soa-domain-database
-tag: osb-compact-domain-soa-qs-12.1.3-jdk7-centos7
-db_tag: osb-compact-domain-soa-qs-12.1.3-basic-11.2.0.4-se-oraclelinux6.7
+tag: soa-extended-domain-soa-qs-12.2.1-jdk8-centos7
+db_tag: soa-extended-domain-soa-qs-12.2.1-basic-11.2.0.4-se-oraclelinux6.7
