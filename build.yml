@@ -22,7 +22,7 @@
       command: "docker build -t {{ image_name }}-managed-server managed-server"
 
     - name: docker tag admin server image
-      command: "docker tag {{ image_name }}-managed-server {{ image_name }}-osb-server:{{ tag }}"
+      command: "docker tag {{ image_name }}-managed-server {{ image_name }}-managed-server:{{ tag }}"
     #  with_items: "{{ tags }}"
 
     #- name: docker kill
