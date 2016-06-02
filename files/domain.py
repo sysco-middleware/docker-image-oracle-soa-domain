@@ -4,10 +4,10 @@ DOMAIN      = 'domain1'
 DOMAIN_PATH = '/opt/oraclefmw/config/domains/' + DOMAIN
 APP_PATH    = '/opt/oraclefmw/config/applications/' + DOMAIN
 
-ADMIN_SERVER_ADDRESS = 'ADMIN-SERVER-ADDRESS'
-SOA_SERVER_ADDRESS = 'SOA-SERVER-ADDRESS'
-OSB_SERVER_ADDRESS = 'OSB-SERVER-ADDRESS'
-BAM_SERVER_ADDRESS = 'BAM-SERVER-ADDRESS'
+ADMIN_SERVER_ADDRESS = 'admin-server'
+SOA_SERVER_ADDRESS = 'soa-server'
+OSB_SERVER_ADDRESS = 'osb-server'
+BAM_SERVER_ADDRESS = 'bam-server'
 LOG_FOLDER     = '/opt/oraclefmw/logs/'
 
 # Expanded or Compact

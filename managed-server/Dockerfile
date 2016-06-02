@@ -16,4 +16,5 @@ ADD wait-admin-server.sh .
 
 EXPOSE $MANAGED_SERVER_PORT
 
-CMD  sh wait-admin-server.sh  && sh bin/startManagedWebLogic.sh $MANAGED_SERVER_NAME t3://$ADMIN_SERVER_HOST:$ADMIN_SERVER_PORT -Djava.security.egd=file:///dev/./urandom
+CMD sh wait-admin-server.sh && \
+    sh bin/startManagedWebLogic.sh $MANAGED_SERVER_NAME t3://$ADMIN_SERVER_HOST:$ADMIN_SERVER_PORT -Djava.security.egd=file:///dev/./urandom

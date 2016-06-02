@@ -1,8 +1,8 @@
 echo ">> Waiting for oracle database to start"
 while true; do
-    tnsping $DB_HOST:$DB_PORT/$DB_NAME < /dev/null
-    echo $?;
-    if [ $? -eq "OK" ]; then
+    result="$(tnsping $DB_HOST:$DB_PORT/$DB_NAME)"
+    echo "$result"
+    if [ "$result" == 'OK' ]; then
         break
     fi
     sleep 10

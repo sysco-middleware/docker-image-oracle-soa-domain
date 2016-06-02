@@ -72,39 +72,9 @@
     #  with_items: "{{ tags }}"
 
     - name: docker kill
-      command: "docker kill tmp-oracle-soa-domain"
+      command: "docker kill tmp-oracle-soa-domain tmp-oracle-soa-database"
 
     - name: docker rm
-      command: "docker rm tmp-oracle-soa-domain"
+      command: "docker rm tmp-oracle-soa-domain tmp-oracle-soa-database"
 
-    - name: build admin server image
-      docker_image:
-        path: ./admin-server
-        name: "{{ image_name }}-admin-server"
-        tag: "{{ tag }}"
-      #command: "docker build -t {{ image_name }}-admin-server admin-server"
-
-    #- name: docker tag admin server image
-    #  command: "docker tag {{ image_name }}-admin-server {{ image_name }}-admin-server:{{ item }}"
-    #  with_items: "{{ tag }}"
-
-    - name: build soa server image
-      docker_image:
-        path: ./managed-server
-        name: "{{ image_name }}-osb-server"
-        tag: "{{ tag }}"
-      # command: "docker build -t {{ image_name }}-osb-server managed-server"
-
-    #- name: docker tag admin server image
-    #  command: "docker tag {{ image_name }}-osb-server {{ image_name }}-osb-server:{{ tag }}"
-    #  with_items: "{{ tags }}"
-
-    - name: docker kill
-      command: "docker kill tmp-oracle-soa-database"
-
-    - name: docker rm
-      command: "docker rm tmp-oracle-soa-database"
-    # image should be push into a private registry
-    # - name: docker push
-    #   command: "docker push {{ image_name }}:{{ item }}"
-    #   with_items: "{{ tags }}"
+- include: build.yml
