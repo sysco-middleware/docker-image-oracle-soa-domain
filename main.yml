@@ -32,6 +32,15 @@
 - hosts: tmp-oracle-soa-domain
   connection: docker
   tasks:
+    - yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: http://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    - yum:
+        name: xmlstarlet
+        state: latest
+        disable_gpg_check: yes 
+
     - shell: tnsping soa-database:1521/orcl
       register: result
       until: result.stdout.find('OK') == 0

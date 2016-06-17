@@ -12,7 +12,8 @@ USER oraclefmw
 WORKDIR $DOMAIN_HOME
 
 ADD wait-db.sh .
+ADD start-admin-server.sh .
 
 EXPOSE 7001
 
-CMD sh wait-db.sh && sh startWebLogic.sh -Djava.security.egd=file:///dev/./urandom
+CMD sh start-admin-server.sh
